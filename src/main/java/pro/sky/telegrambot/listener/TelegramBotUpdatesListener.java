@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import pro.sky.telegrambot.service.NotificationService;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -21,11 +22,13 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     @Autowired
     private TelegramBot telegramBot;
     private SendMessage message;
-
+    @Autowired
+    private NotificationService notificationService;
 
 
     @Value("Саламалейкум!")
     private String startMsg;
+
 
     @PostConstruct
     public void init() {
@@ -40,6 +43,10 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 message = new SendMessage(update.message().chat().id(), startMsg);
                 telegramBot.execute(message);
                 System.out.println(startMsg);
+            }
+
+            if (update.message().text().equalsIgnoreCase("/get")) {
+                System.out.println(notificationService.get());
             }
 
         });
