@@ -1,8 +1,6 @@
 package pro.sky.telegrambot.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -14,7 +12,6 @@ public class NotificationTask {
     long chat_id;
     String notification;
     LocalDateTime date_time;
-
 
     public long getTask_id() {
         return task_id;
