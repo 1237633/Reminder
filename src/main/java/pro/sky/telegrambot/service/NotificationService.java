@@ -11,6 +11,7 @@ import pro.sky.telegrambot.repository.NotificationRepo;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -38,7 +39,7 @@ public class NotificationService {
         logger.info("Added notification task {}", notificationTask);
     }
 
-    public NotificationTask parseAndCreate(String inputMessage) throws IllegalStateException {
+    public NotificationTask parseAndCreate(String inputMessage) throws IllegalStateException, DateTimeParseException {
         logger.info("Parsing {}", inputMessage);
         matcher = pattern.matcher(inputMessage);
         String dateAndTime;

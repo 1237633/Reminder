@@ -17,6 +17,7 @@ import pro.sky.telegrambot.service.NotificationService;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Service
@@ -31,7 +32,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private NotificationService notificationService;
 
 
-    @Value("Привет! Что бы создать напоминание введи его в формате дд.мм.гггг чч:мм 'текст напоминания'")
+    @Value("Привет! Чтобы создать напоминание введи его в формате дд.мм.гггг чч:мм 'текст напоминания'")
     private String startMsg;
 
 
@@ -65,6 +66,9 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 } catch (DataIntegrityViolationException e) {
                     logger.error(e.getMessage() + " for " + update.message().text());
                     telegramBot.execute(new SendMessage(update.message().chat().id(), "Вы уже создали такое напоминание, либо указанное время уже прошло."));
+                } catch (DateTimeParseException e) {
+                    logger.error(e.getMessage());
+                    telegramBot.execute(new SendMessage(update.message().chat().id(), "Что-то не так с датой и временем. Убедитесь, что формат дд.ММ.гггг чч:мм"));
                 }
             } else {
                 throw new NullPointerException("No message present");
