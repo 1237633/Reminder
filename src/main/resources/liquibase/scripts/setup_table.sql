@@ -26,6 +26,12 @@ ALTER TABLE Notification_task
 
 CREATE INDEX notification_chat_id ON notification_task (notification, chat_id);
 
+-- changeset vasyan:5
+
+DROP INDEX notification_chat_id;
+
+CREATE INDEX date_time ON notification_task (date_time);
+
 
 
 
