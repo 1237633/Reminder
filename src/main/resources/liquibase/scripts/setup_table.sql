@@ -22,5 +22,10 @@ ALTER TABLE Notification_task
 ALTER TABLE Notification_task
     ADD CONSTRAINT unique_notification_and_date UNIQUE (notification, date_time, chat_id);
 
+-- changeset vasyan:4
+
+CREATE INDEX notification_chat_id ON notification_task (notification, chat_id);
+
+
 
 

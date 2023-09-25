@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
+@Table(name = "notification_task")
+@AttributeOverride(name = "date_time", column = @Column(name = "date_time"))
 public class NotificationTask {
     @Id
     @GeneratedValue

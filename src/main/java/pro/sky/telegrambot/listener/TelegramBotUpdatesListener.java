@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import pro.sky.telegrambot.service.NotificationService;
@@ -30,7 +31,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private NotificationService notificationService;
 
 
-    @Value("Саламалейкум!")
+    @Value("Привет! Что бы создать напоминание введи его в формате дд.мм.гггг чч:мм 'текст напоминания'")
     private String startMsg;
 
 
@@ -55,7 +56,6 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     return;
                 }
 
-
                 try {
                     notificationService.add(update.message().text(), update.message().chat().id());
                     telegramBot.execute(new SendMessage(update.message().chat().id(), "Атлишна! Напоминалка добавлена!"));
@@ -71,6 +71,15 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             }
         });
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
+    }
+
+    @Scheduled(cron = "0 0/1 * * * *")
+    public void sendNotifications() {
+        notificationService.getNotificationsToSend().forEach((k, v) -> {
+            v.forEach(e -> {
+                telegramBot.execute(new SendMessage(k, e));
+            });
+        });
     }
 
 }
