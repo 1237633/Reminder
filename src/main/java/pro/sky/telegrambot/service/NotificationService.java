@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import pro.sky.telegrambot.model.NotificationTask;
@@ -68,9 +69,14 @@ public class NotificationService {
                 .collect(Collectors
                         .groupingBy(e -> e.getChat_id(), Collectors.mapping(NotificationTask::getNotification, Collectors.toSet())));
     }
+
     @Scheduled(cron = "0 0 0 * * ?")
     public void deleteOldTasks() {
-        notificationRepo.deleteByDate();
+        try {
+            notificationRepo.deleteByDate();
+        } catch (JpaSystemException e) {
+            logger.error(e.getMessage());
+        }
         logger.info("Deleted old tasks");
     }
 }

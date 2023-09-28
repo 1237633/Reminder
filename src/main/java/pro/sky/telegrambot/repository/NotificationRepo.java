@@ -14,4 +14,8 @@ public interface NotificationRepo extends JpaRepository<NotificationTask, Long> 
 
     @Query(value = "DELETE FROM notification_task WHERE date_time < CURRENT_DATE", nativeQuery = true)
     void deleteByDate();
+
+
+
 }
+

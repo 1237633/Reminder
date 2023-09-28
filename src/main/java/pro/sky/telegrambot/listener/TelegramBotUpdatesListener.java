@@ -32,7 +32,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private NotificationService notificationService;
 
 
-    @Value("Привет! Чтобы создать напоминание введи его в формате дд.мм.гггг чч:мм 'текст напоминания'")
+    @Value("${default.answer}")
     private String startMsg;
 
 
