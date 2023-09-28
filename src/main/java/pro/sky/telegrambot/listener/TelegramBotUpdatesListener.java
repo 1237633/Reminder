@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import pro.sky.telegrambot.service.NotificationService;
@@ -16,6 +17,7 @@ import pro.sky.telegrambot.service.NotificationService;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Service
@@ -30,7 +32,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private NotificationService notificationService;
 
 
-    @Value("Саламалейкум!")
+    @Value("${default.answer}")
     private String startMsg;
 
 
@@ -55,7 +57,6 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     return;
                 }
 
-
                 try {
                     notificationService.add(update.message().text(), update.message().chat().id());
                     telegramBot.execute(new SendMessage(update.message().chat().id(), "Атлишна! Напоминалка добавлена!"));
@@ -65,12 +66,24 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 } catch (DataIntegrityViolationException e) {
                     logger.error(e.getMessage() + " for " + update.message().text());
                     telegramBot.execute(new SendMessage(update.message().chat().id(), "Вы уже создали такое напоминание, либо указанное время уже прошло."));
+                } catch (DateTimeParseException e) {
+                    logger.error(e.getMessage());
+                    telegramBot.execute(new SendMessage(update.message().chat().id(), "Что-то не так с датой и временем. Убедитесь, что формат дд.ММ.гггг чч:мм"));
                 }
             } else {
                 throw new NullPointerException("No message present");
             }
         });
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
+    }
+
+    @Scheduled(cron = "0 0/1 * * * *")
+    public void sendNotifications() {
+        notificationService.getNotificationsToSend().forEach((k, v) -> {
+            v.forEach(e -> {
+                telegramBot.execute(new SendMessage(k, e));
+            });
+        });
     }
 
 }
